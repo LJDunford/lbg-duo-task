@@ -1,28 +1,40 @@
 pipeline {
     agent any
     
-    environment {
-        DB_PASSWORD = credentials('DB_PASSWORD')
-    }
-    
     stages {
-        stage('checkout source code') {
+        stage('cleanup') {
             steps {
-                git url: "https://github.com/LJDunford/lbg-duo-task.git", branch: "master"
+                sh '''
+                if docker logs nginx; then
+                    if docker exec nginx ls; then
+                        docker stop nginx
+                    else
+                        sleep 1
+                    fi
+                        docker rm nginx
+                else
+                    sleep 1
+                fi
+                if docker logs flask-app; then
+                    if docker exec flask-app ls; then
+                        docker stop flask-app
+                    else
+                        sleep 1
+                    fi
+                '''
             }
         }
         stage('Build') {
             steps {
-                sh 'docker build -t duo-client:v2 .'
+                sh 'docker build -t duo-task:v1 .'
             }
         }
         stage('run containers') {
             steps {
                 sh '''
                 docker network inspect duo-net && sleep 1 || docker network create duo-net
-                docker run -d -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} --name duo-db --network duo-net duo-db:latest
-                docker run -d -e DB_PASSWORD=${DB_PASSWORD} --name duo-service --network duo-net duo-service:latest
-                docker run -d -p 80:80 --network duo-net --name duo-client duo-client:v2
+                docker run -d --name flask-app --netwropk duo-net duo-task:v1
+                docker run -d -p 80:80 --network duo-net --mount type=bind,source=$(pwd)/nginx.conf,target=/etc/nginx/nginx.conf --name nginx nginx:alpine
                 '''
             }
         }

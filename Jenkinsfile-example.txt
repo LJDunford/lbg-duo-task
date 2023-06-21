@@ -20,8 +20,8 @@ pipeline {
             steps {
                 sh '''
                 docker network inspect duo-net && sleep 1 || docker network create duo-net
-                docker run -d -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} --name duo-db --network duo-net ldunford/duo-db:latest
-                docker run -d -e DB_PASSWORD=${DB_PASSWORD} --name duo-service --network duo-net ldunford/duo-service:latest
+                docker run -d -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} --name duo-db --network duo-net duo-db:latest
+                docker run -d -e DB_PASSWORD=${DB_PASSWORD} --name duo-service --network duo-net duo-service:latest
                 docker run -d -p 80:80 --network duo-net --name duo-client duo-client:v2
                 '''
             }

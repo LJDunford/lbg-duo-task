@@ -19,6 +19,7 @@ pipeline {
         stage('run containers') {
             steps {
                 sh '''
+                docker login
                 docker network inspect duo-net && sleep 1 || docker network create duo-net
                 docker run -d -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} --name duo-db --network duo-net duo-db:latest
                 docker run -d -e DB_PASSWORD=${DB_PASSWORD} --name duo-service --network duo-net duo-service:latest

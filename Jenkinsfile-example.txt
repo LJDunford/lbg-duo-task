@@ -11,31 +11,6 @@ pipeline {
                 git url: "https://github.com/LJDunford/lbg-duo-task.git", branch: "master"
             }
         }
-        stage('cleanup') {
-            steps {
-                sh '''
-                if docker logs duo-db; then
-                    if docker exec duo-db ls; then
-                        docker stop duo-db
-                    fi
-                    docker rm duo-db
-                fi
-                if docker logs duo-service; then
-                    if docker exec duo-service ls; then
-                        docker stop duo-service
-                    fi
-                    docker rm duo-service
-                fi
-                if docker logs duo-client; then
-                    if docker exec duo-client ls; then
-                        docker stop duo-client
-                    fi
-                    docker rm duo-client
-                fi
-                docker rmi duo-client:v1
-                '''
-            }
-        }
         stage('Build') {
             steps {
                 sh 'docker build -t duo-client:v2 .'

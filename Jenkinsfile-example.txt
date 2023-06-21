@@ -10,8 +10,8 @@ pipeline {
                         docker stop nginx
                     else
                         sleep 1
-                    fi
-                        docker rm nginx
+                fi
+                    docker rm nginx
                 else
                     sleep 1
                 fi

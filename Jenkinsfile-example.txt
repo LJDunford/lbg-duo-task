@@ -20,6 +20,7 @@ pipeline {
                         docker stop flask-app
                     else
                         sleep 1
+                fi
                 '''
             }
         }

@@ -18,5 +18,7 @@ services:
       - type: bind
         source: ./nginx.conf
         target: /etc/nginx/nginx.conf
+    depends_on:
+      - flask-app
 networks:
   duo-net:
